@@ -25,6 +25,8 @@ services:
         image: postgres:14
         restart: unless-stopped
         container_name: virtu_feedback_form_db_container
+        ports:
+            - 54320:5432
         environment:
             POSTGRES_PASSWORD: ${DB_PASSWORD:?Set password for main app database user}
             POSTGRES_USER: ${DB_USERNAME:?Set password for main app database user}

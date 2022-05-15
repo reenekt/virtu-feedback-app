@@ -7,6 +7,17 @@
 docker-compose up -d
 ```
 
+2. Run migrations
+```bash
+docker-compose exec app bash
+```
+
+```bash
+php artisan migrate
+```
+
+> NOTE: you can run any artisan command from application container
+
 2. Run frontend app
 ```bash
 cd frontend && npm run dev
@@ -29,3 +40,7 @@ chmod -R 775 storage && \
 chmod -R 775 bootstrap/cache && \
 chown -R root:www-data .
 ```
+
+## Misc
+### Connect to database container outside of docker network
+Connect to database using localhost:54320 and database credentials from .env
