@@ -4,6 +4,8 @@ namespace Tests\Feature\Models;
 
 use App\Models\Feedback;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
 
@@ -71,6 +73,33 @@ class FeedbackTest extends TestCase
         );
     }
 
+    public function test_create_feedback_request_with_valid_data_and_attachment_creates_feedback_and_stores_file()
+    {
+        Storage::fake('local');
+
+        $attachment = UploadedFile::fake()->image('attachment_file_john_joe.png');
+        $expectedAttachmentPath = 'feedback/attachments/' . $attachment->hashName();
+        $data = [
+            'fullname' => 'John Joe',
+            'contact_phone' => '+79991234567',
+            'attachment' => $attachment
+        ];
+
+        $response = $this->postJson('/api/feedback', $data);
+
+        $response->assertCreated();
+
+        Storage::assertExists($expectedAttachmentPath);
+
+        $response->assertJson(
+            fn(AssertableJson $json) => $json
+                ->where('success', true)
+                ->where('model.fullname', $data['fullname'])
+                ->where('model.contact_phone', $data['contact_phone'])
+                ->where('model.attachment_file', $expectedAttachmentPath)
+        );
+    }
+
     public function test_create_feedback_request_with_wrong_phone_fails_validation()
     {
         $data = [
@@ -125,6 +154,36 @@ class FeedbackTest extends TestCase
                 ->where('success', true)
                 ->where('model.fullname', $data['fullname'])
                 ->where('model.contact_phone', $data['contact_phone'])
+        );
+    }
+
+    public function test_update_feedback_request_with_valid_dataand_attachment_updates_feedback_and_stores_file()
+    {
+        Storage::fake('local');
+
+        /** @var Feedback $feedback */
+        $feedback = Feedback::factory()->create();
+
+        $attachment = UploadedFile::fake()->image('attachment_file_john_joe.png');
+        $expectedAttachmentPath = 'feedback/attachments/' . $attachment->hashName();
+        $data = [
+            'fullname' => 'John Joe',
+            'contact_phone' => '+79991234567',
+            'attachment' => $attachment
+        ];
+
+        $response = $this->putJson('/api/feedback/' . $feedback->id, $data);
+
+        $response->assertOk();
+
+        Storage::assertExists($expectedAttachmentPath);
+
+        $response->assertJson(
+            fn(AssertableJson $json) => $json
+                ->where('success', true)
+                ->where('model.fullname', $data['fullname'])
+                ->where('model.contact_phone', $data['contact_phone'])
+                ->where('model.attachment_file', $expectedAttachmentPath)
         );
     }
 

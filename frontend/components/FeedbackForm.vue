@@ -43,6 +43,23 @@
       />
     </div>
 
+    <div class="mb-3">
+      <label for="attachment-input" class="form-label">Файл</label>
+      <file-input
+        id="attachment-input"
+        v-model="feedback.attachment"
+        :class="{
+          'is-invalid': getErrors('attachment') !== null
+        }"
+      />
+      <div
+        v-for="(error, errorIndex) in getErrors('attachment')"
+        :key="'error-' + errorIndex"
+        class="invalid-feedback"
+        v-text="error"
+      />
+    </div>
+
     <div class="align-items-center d-flex">
       <button type="submit" class="btn btn-primary" :disabled="loading">
         <span v-show="!loading">Отправить</span>
@@ -68,6 +85,7 @@ import Vue from 'vue'
 import { validationMixin } from 'vuelidate'
 import { required, minLength } from 'vuelidate/lib/validators'
 import { mask } from 'vue-the-mask'
+import FileInput from './FileInput'
 
 // +7########## format validator
 const phoneValidator = value => typeof value === 'string' &&
@@ -76,6 +94,7 @@ const phoneValidator = value => typeof value === 'string' &&
 
 export default Vue.extend({
   name: 'FeedbackForm',
+  components: { FileInput },
   directives: { mask },
   mixins: [validationMixin],
   validations: {
@@ -96,6 +115,7 @@ export default Vue.extend({
       feedback: {
         fullname: null,
         contact_phone: '+7 (',
+        attachment: null,
       },
       apiErrors: {},
     }
@@ -128,7 +148,7 @@ export default Vue.extend({
         errors.push(this.apiErrors[fieldKey])
       }
 
-      if (this.$v.feedback[fieldKey].$error) {
+      if (fieldKey in this.$v.feedback && this.$v.feedback[fieldKey].$error) {
         if (this.$v.feedback[fieldKey].required === false) {
           errors.push('Заполните поле')
         }
@@ -160,18 +180,24 @@ export default Vue.extend({
         this.apiErrors = {}
         this.loading = true
 
-        const data = {
-          fullname: this.feedback.fullname,
-          contact_phone: this.feedback.contact_phone.replaceAll(/[()\s-]/g, ''),
+        const data = new FormData()
+        data.set('fullname', this.feedback.fullname)
+        data.set('contact_phone', this.feedback.contact_phone.replaceAll(/[()\s-]/g, ''))
+        data.set('attachment', this.feedback.attachment)
+
+        const axiosConfig = {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         }
 
-        await this.$axios.$post('/feedback', data)
+        await this.$axios.$post('/feedback', data, axiosConfig)
 
         this.showAlertSuccess()
       } catch (error) {
         this.showAlertError()
 
-        const errors = error.response.data.errors
+        const errors = (error.response && error.response.data.errors) || null
         if (errors) {
           this.apiErrors = errors
         }

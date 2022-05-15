@@ -34,6 +34,11 @@ class FeedbackController extends Controller
     {
         $feedback = new Feedback($request->all());
 
+        $attachment = $request->file('attachment');
+        if ($attachment) {
+            $feedback->setAttachmentUploadedFile($attachment);
+        }
+
         $feedback->save();
 
         return response()->json([
@@ -63,6 +68,11 @@ class FeedbackController extends Controller
     public function update(UpdateFeedbackRequest $request, Feedback $feedback)
     {
         $feedback->fill($request->all());
+
+        $attachment = $request->file('attachment');
+        if ($attachment) {
+            $feedback->setAttachmentUploadedFile($attachment);
+        }
 
         $feedback->save();
 
