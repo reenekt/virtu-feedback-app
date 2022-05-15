@@ -7,7 +7,12 @@
 docker-compose up -d
 ```
 
-2. Open app url: http://localhost:8000
+2. Run frontend app
+```bash
+cd frontend && npm run dev
+```
+
+3. Open app url: http://localhost:3000 (or other link from terminal output)
 
 ## Troubleshooting
 1. Could not open file in append mode...
