@@ -23,7 +23,8 @@ php artisan migrate
 cd frontend && npm run dev
 ```
 
-3. Open app url: http://localhost:3000 (or other link from terminal output)
+3. Open app url: http://localhost:3000 (or other link from terminal output) for form page
+and http://localhost:3000/feedback for admin dashboard page (feedback list)
 
 ## Troubleshooting
 1. Could not open file in append mode...

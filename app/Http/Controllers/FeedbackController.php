@@ -7,8 +7,10 @@ use App\Http\Requests\UpdateFeedbackRequest;
 use App\Models\Feedback;
 use App\Http\Resources\Feedback as FeedbackResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FeedbackController extends Controller
 {
@@ -19,7 +21,7 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        $feedbacks = Feedback::query()->paginate();
+        $feedbacks = Feedback::query()->paginate(1); // todo remove 1
 
         return FeedbackResource::collection($feedbacks);
     }
@@ -93,5 +95,11 @@ class FeedbackController extends Controller
         $feedback->delete();
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function getAttachment(Request $request, Feedback $feedback): StreamedResponse
+    {
+        $download = $request->boolean('download');
+        return $feedback->getAttachmentFile($download);
     }
 }

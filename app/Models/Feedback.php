@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * @property int $id
@@ -63,6 +64,15 @@ class Feedback extends Model
         $this->attachmentUploadedFile = $file;
 
         return $this;
+    }
+
+    public function getAttachmentFile(bool $download = false): StreamedResponse
+    {
+        if ($download) {
+            return Storage::disk('local')->download($this->attachment_file);
+        }
+
+        return Storage::disk('local')->response($this->attachment_file);
     }
 
     public function storeAttachmentInStorage(): bool|string

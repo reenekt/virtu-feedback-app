@@ -19,4 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('feedback/{feedback}/attachment', [FeedbackController::class, 'getAttachment']);
 Route::apiResource('feedback', FeedbackController::class);
