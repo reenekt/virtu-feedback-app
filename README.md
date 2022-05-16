@@ -2,28 +2,31 @@
 
 ## Running
 ### Docker (Docker compose)
-1. Run all compose services
+1. Copy .env.example to .env in root folder and in `frontend/`
+
+2. Run all compose services
 ```bash
 docker-compose up -d
 ```
 
-2. Run migrations
+3. Generate key and run migrations
 ```bash
 docker-compose exec app bash
 ```
 
 ```bash
+php artisan key:generate && \
 php artisan migrate
 ```
 
 > NOTE: you can run any artisan command from application container
 
-2. Run frontend app
+4. Run frontend app
 ```bash
 cd frontend && npm run dev
 ```
 
-3. Open app url: http://localhost:3000 (or other link from terminal output) for form page
+5. Open app url: http://localhost:3000 (or other link from terminal output) for form page
 and http://localhost:3000/feedback for admin dashboard page (feedback list)
 
 ## Troubleshooting
