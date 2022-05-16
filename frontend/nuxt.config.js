@@ -24,7 +24,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    '~assets/sass/bootstrap5.scss',
+    '~node_modules/bootstrap/dist/css/bootstrap.min.css',
     '~assets/sass/app.scss',
   ],
 

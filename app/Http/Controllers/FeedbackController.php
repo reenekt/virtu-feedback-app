@@ -21,7 +21,7 @@ class FeedbackController extends Controller
      */
     public function index()
     {
-        $feedbacks = Feedback::query()->paginate(1); // todo remove 1
+        $feedbacks = Feedback::query()->paginate();
 
         return FeedbackResource::collection($feedbacks);
     }
